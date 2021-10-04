@@ -21,8 +21,7 @@ int f = 78, g;
                       Задание 3.
 =======================================================================*/
 
-int array[3][3][3];
-
+ int array[3][3][3];
 
 int main()
 {
@@ -32,21 +31,14 @@ int main()
 
     std::cout << g << std::endl;
 
-    int* ptr1;
+    int* ptr1 = nullptr;
 
-    ptr1 = &array[0][0][0];
-    ptr1 = ptr1 + 3;
-
-    *ptr1 = 30;
     
+    ptr1 = &array[1][1][1];
     
-    std::cout << array[1][1][1] << std::endl;
+    *ptr1 = 27;
 
-
-
-
-
-
+    std::cout << *ptr1  << std::endl;
 
     return 0;
 }
