@@ -1,3 +1,0 @@
-First employee id: 1222865
-First employee age: 28
-First employee salary: 38700.1
