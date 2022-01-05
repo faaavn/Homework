@@ -89,4 +89,6 @@ int main()
     printOneLinkIntList(second);
     //=======================================3rd===================
     printf("%s\n",isSorted(first)? "true" : "false");
+
+    return 0;
 }
