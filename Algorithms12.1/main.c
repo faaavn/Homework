@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <locale.h>
 #define bool int
 
 
@@ -119,7 +118,6 @@ void searchTree(Node *root, int *pSearch)
 }
 int main()
 {
-    setlocale(LC_ALL, "Rus");
     //=======================================1st=====================
     Node *root = NULL;
 
@@ -135,8 +133,8 @@ int main()
     printTree(root);
     printf("\n");
 
-    /*for(int i = 0; i <= 50; i++) запутался с заданием посторения 50 деревьев, не совсем понял как это реализовывать
-    {                              посмотрю на вебинаре, как вы это записали
+    /*for(int i = 0; i <= 50; i++)
+    {
         root = create(root,rand());
 
         for(int j = 0; j <= 10000; j++)
