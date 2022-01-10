@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <locale.h>
 #define bool int
 
 
@@ -118,6 +119,7 @@ void searchTree(Node *root, int *pSearch)
 }
 int main()
 {
+    setlocale(LC_ALL, "Rus");
     //=======================================1st=====================
     Node *root = NULL;
 
