@@ -29,28 +29,35 @@ void depthTrail(int st) //current peak
 }
 
 int matrix1[n1][n1]= {
+    {0,1,1,1,0,0},
     {0,0,0,0,1,0},
-    {0,0,1,0,0,0},
     {0,0,0,0,0,1},
-    {0,0,1,0,0,1},
-    {0,1,0,0,0,0},
-    {0,1,0,1,0,0},
+    {0,0,0,0,0,0},
+    {0,0,0,0,0,0},
+    {0,0,0,0,0,0},
 };
 int visited1[n1]={0};
+int connections[n1]={0};
 
-void reverseCountRibs(int st1)  //ne yspel
+void matrixSearch(int st1)// ne yspel
 {
-    int nxt;  //next peak
+    int nxt; //next peak
     int rib; //connection(rib)
-    visited1[st1] = 1;
-    printf(rib);
-    for(nxt=0; nxt < n1; ++nxt)
-    {
-         if(matrix1[st1][nxt]==1)
-            rib+=rib;
 
-         reverseCountRibs(nxt);
+    printf("%d",rib);
+
+    connections[rib]=0;
+
+    visited1[st1] = 1;
+
+    for (nxt=0; nxt < n1; ++nxt)
+    {
+       if(matrix[st1][nxt]== 1 && !visited[nxt] && !connections[rib])
+       {
+          matrixSearch(rib);
+       }
     }
+
 }
 
 
@@ -69,7 +76,7 @@ int main()
     }
     printf("\n");
   //===============================2nd========================
-
+    matrixSearch(0);
 
 
     return 0;
