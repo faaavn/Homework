@@ -68,18 +68,26 @@ void printTree(Node *root)
     }
 }
 
+int countDepth(Node *root)
+{
+    if(root == NULL)
+        return 0;
+    int left=0;
+    int right=0;
+    if(root->left !=NULL)
+    {
+        left=countDepth(root->left);
+    }
+    if(root->right !=NULL)
+    {
+        left=countDepth(root->right);
+    }
+    return 1 +((left>right) ? left : right);
+}
+
 bool isBalanced(Node *root)
 {
-    if (root == NULL)
-    return 1;
-
-  int lh = isBalanced(root->left);
-  int rh = isBalanced(root->right);
-
-  if (abs(lh - rh) <= 1)
-    return 0;
-  else
-    return 1;
+    return abs(countDepth(root->left)- countDepth(root->right)) <=1;
 }
 
 void searchTree(Node *root, int *pSearch)
@@ -116,39 +124,53 @@ void searchTree(Node *root, int *pSearch)
         printf("Your element is not here");
     }
 }
+
+int balancedPercent(Node *root)
+{
+    const int TREES = 50;
+    const int size = 10000;
+    int balanced =0;
+    for(int i=0; i < TREES; ++i)
+    {
+        Node *root = NULL;
+        root=create(root,rand()%1000);
+        for( int j =0; j < size; j++)
+        {
+            root=add(root, rand()%1000);
+        }
+        balanced += isBalanced(root) ? 1 : 0;
+    }
+    printf("The percentage of Balanced trees: ");
+
+    printf("%d%%\n", balanced * 100/TREES);
+}
+
 int main()
 {
     //=======================================1st=====================
     Node *root = NULL;
 
     srand(time(NULL));
-    root=create(root,rand()%1000);
-    root=add(root,rand()%1000);
-    root=add(root,rand()%1000);
-    root=add(root,rand()%1000);
-    root=add(root,rand()%1000);
-    root=add(root,rand()%1000);
-    root=add(root,rand()%1000);
-    root=add(root,rand()%1000);
+    root=create(root,rand()%100);
+    root=add(root,rand()%100);
+    root=add(root,rand()%100);
+    root=add(root,rand()%100);
+    root=add(root,rand()%100);
+    root=add(root,rand()%100);
+    root=add(root,rand()%100);
+    root=add(root,rand()%100);
     printTree(root);
     printf("\n");
 
-    /*for(int i = 0; i <= 50; i++)
-    {
-        root = create(root,rand());
-
-        for(int j = 0; j <= 10000; j++)
-        {
-           root = add (root,rand());
-        }
-    }
-       printf("\n");*/
 
     if (isBalanced(root))
         printf("Tree is balanced");
     else
         printf("Tree is not balanced");
      printf("\n");
+
+    balancedPercent(root);
+
     //=======================================2nd=====================
 
     printf("Type the number u want to find: ");
