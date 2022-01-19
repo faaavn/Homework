@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include "Stack.h"
+#include "Geek.h"
 #define n 6
-#define n1 6
 
 int matrix[n][n]= {
     {0,1,1,0,0,0},
     {0,0,0,1,1,0},
     {0,1,0,0,0,1},
     {1,0,0,0,0,0},
-    {0,0,0,0,0,1},
-    {0,0,0,0,1,0},
+    {0,0,0,0,0,0},
+    {0,0,0,0,1,1},
 };
 int visited[n]={0};
 
@@ -28,38 +28,44 @@ void depthTrail(int st) //current peak
     }
 }
 
-int matrix1[n1][n1]= {
-    {0,1,1,1,0,0},
-    {0,0,0,0,1,0},
-    {0,0,0,0,0,1},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,0},
-};
-int visited1[n1]={0};
-int connections[n1]={0};
+int queueLinks[6] = {0};
+int matrixLinks [6] = {0};
 
-void matrixSearch(int st1)// ne yspel
+void matrixCount(int** matrix, const int size)
 {
-    int nxt; //next peak
-    int rib; //connection(rib)
-
-    printf("%d",rib);
-
-    connections[rib]=0;
-
-    visited1[st1] = 1;
-
-    for (nxt=0; nxt < n1; ++nxt)
+    for (int i =0; i < size; ++i)
     {
-       if(matrix[st1][nxt]== 1 && !visited[nxt] && !connections[rib])
-       {
-          matrixSearch(rib);
-       }
+        for(int j =0; j < size; ++j){
+            if (matrix[i][j]==1);
+                if(i!=j) matrixLinks[i]++;
+        }
     }
-
 }
 
+void queueCount(int** matrix, int start, const int size)
+{
+    TwoLinkList* queue = (TwoLinkList*)malloc(sizeof(TwoLinkList));
+    initTwoLinkList(queue);
+    clearIntArray(visited, size);
+    TwoLinkEnqueue(queue,start);
+    while(queue->size > 0)
+    {
+        int indx = TwoLinkDequeue(queue);
+        if(visited[indx]) continue;
+        visited[indx] = true;
+        for (int i =0; i<size; ++i)
+        {
+            if(get2dInt(matrix, indx, i)==1)
+            {
+                if(i!= indx)
+                    queueLinks[i]++;
+                if(!visited[i])
+                    TwoLinkEnqueue(queue,i);
+            }
+        }
+    }
+    clearIntArray(visited, size);
+}
 
 int main()
 {
@@ -76,7 +82,13 @@ int main()
     }
     printf("\n");
   //===============================2nd========================
-    matrixSearch(0);
+    matrixCount(matrix,6);
+
+    for (int i = 0; i<= 6; i++)
+        printf(matrixLinks); //delal cherez Geek.h, no poyavilis` problemi s vivodom
+                             //tak ih i ne reshil
+
+
 
 
     return 0;
