@@ -13,7 +13,7 @@ typedef struct tree{
 
 Node *create(Node *root, int key)
 {
-    Node *tmp = malloc(sizeof(Node));
+    Node *tmp = (Node*)malloc(sizeof(Node*));
     tmp->key = key;
     tmp->parent = NULL;
     tmp-> left = tmp -> right = NULL;
@@ -103,7 +103,8 @@ void searchTree(Node *root, int *pSearch)
         else if(*pSearch < root->key)
         {
             searchTree(root->left,pSearch);
-            if(root->left == *pSearch)
+           int currentL = root->left;
+            if(currentL == *pSearch)
             {
                 printf("This is your element: ");
                 printf("%2d",root->left);
@@ -112,7 +113,9 @@ void searchTree(Node *root, int *pSearch)
         else if(*pSearch > root->key)
         {
             searchTree(root->right,pSearch);
-            if(root->right == *pSearch)
+
+            int currentR = root->right;
+            if(currentR == *pSearch)
             {
                 printf("This is your element: ");
                 printf("%2d",root->right);
