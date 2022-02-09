@@ -45,7 +45,10 @@ private:
 	uint8_t m_alpha = 250;
 
 public:
-	RGBA(int _red, int _green, int _blue, int _alpha) {
+	
+	RGBA() = default;
+
+	void RGBA_init(int _red, int _green, int _blue, int _alpha) {
 		m_red = _red; m_green = _green; m_blue = _blue; m_alpha = _alpha;
 	}
 
@@ -125,7 +128,8 @@ int main()
 	calc.setPower(19.3, 3.5);
 	calc.calculatePower();
 
-	RGBA var(14, 27, 11, 37);
+	RGBA var;
+	var.RGBA_init(14, 27, 11, 37);
 	var.printRGBA();
 
 	Stack stack;
