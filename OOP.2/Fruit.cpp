@@ -66,9 +66,9 @@ int main_fr()
 	Banana b;
 	GrannySmith c;
 
-	std::cout << "My " << a.getName() << " is " << a.getColor() << endl;
-	std::cout << "My " << b.getName() << " is " << b.getColor() << endl;
-	std::cout << "My " << c.getName() << " is " << c.getColor() << endl;
+	cout << "My " << a.getName() << " is " << a.getColor() << endl;
+	cout << "My " << b.getName() << " is " << b.getColor() << endl;
+	cout << "My " << c.getName() << " is " << c.getColor() << endl;
 
 
 
