@@ -1,143 +1,203 @@
-﻿#include <iostream>
-#include <string>
+﻿#include "DifM1.h"
+
+#include <sstream>
 #include <algorithm>
 #include <iomanip>
-#include "DifM1.h"
-#include <tuple>
-using namespace std;
+#include "test.hpp"
 
-class PhoneBook : public Person, public PhoneBook
+/****************************
+ *          Person          *
+ ****************************/
+
+std::optional<std::string> getOptStr(std::string& s)
 {
-protected:
-    vector<pair<Person, PhoneNumber>> record;
-public:
-    string surname, name;
-    optional<string> secondName;
-    int countryCode, cityCode;
-    string number;
-    optional<string> additNum;
-    PhoneBook() = default;
-    PhoneBook(ifstream& file) {
-        
-        if (file.is_open())
+    if (s == "")
+    {
+        return std::nullopt;
+    }
+
+    return s;
+}
+
+std::ostream& operator<<(std::ostream& out, const Person& p)
+{
+    out << std::setw(15) << p.firstname << std::setw(12) << p.lastname;
+
+    if (p.patronymic.has_value())
+    {
+        out << std::setw(17) << p.patronymic.value();
+    }
+    else
+    {
+        out << std::setw(18);
+    }
+
+    return out;
+}
+
+bool operator<(const Person& p1, const Person& p2)
+{
+    return tie(p1.firstname, p1.lastname, p1.patronymic) < tie(p2.firstname, p2.lastname, p2.patronymic);
+}
+
+bool operator==(const Person& p1, const Person& p2)
+{
+    return tie(p1.firstname, p1.lastname, p1.patronymic) == tie(p2.firstname, p2.lastname, p2.patronymic);
+}
+
+/*********************************
+ *          PhoneNumber          *
+ *********************************/
+
+bool operator<(const PhoneNumber& p1, const PhoneNumber& p2)
+{
+    return tie(p1.country_code, p1.city_code, p1.number, p1.additional_number) < tie(p2.country_code, p2.city_code, p2.number, p2.additional_number);
+}
+
+std::optional<int> getOptInt(std::string& s)
+{
+    if (s == "")
+    {
+        return std::nullopt;
+    }
+
+    return std::stoi(s);
+}
+
+std::ostream& operator<<(std::ostream& out, const PhoneNumber& p)
+{
+    out << std::setw(3) << '+' << p.country_code << '(' << p.city_code << ')' << p.number;
+
+    if (p.additional_number.has_value())
+    {
+        out << ' ' << p.additional_number.value();
+    }
+
+    return out;
+}
+
+/*******************************
+ *          PhoneBook          *
+ *******************************/
+
+PhoneBook::PhoneBook(std::istream& file)
+{
+    if (!file)
+    {
+        std::cout << "Не удаётся открыть файл!" << std::endl;
+        exit(1);
+    }
+
+    for (std::string line; std::getline(file, line);)
+    {
+        std::stringstream str(line);
+        std::vector<std::string> rowData;
+
+        for (std::string s; getline(str, s, ';');)
         {
-            while (file >> surname >> name >> secondName.emplace() >> countryCode >> cityCode >> number >> additNum.emplace())
+            rowData.push_back(s);
+        }
+
+        std::pair<Person, PhoneNumber> entry;
+
+        for (size_t i = 0; i < rowData.size(); ++i)
+        {
+            switch (i)
             {
-                if (secondName.has_value())
-                    if (secondName.value() == "-")
-                        secondName = nullopt;
-                Person person(surname, name, secondName);
-                if (additNum.has_value())
-                    if (additNum.value() == "-")
-                        additNum = nullopt;
-                    else
-                        additNum.emplace() = stoi(additNum.value());
-
-                PhoneNumber phoneNum(countryCode, cityCode, number, additNum);
-
-                record.push_back(make_pair(person, phoneNum));
+            case 0:
+                entry.first.firstname = rowData[i];
+                break;
+            case 1:
+                entry.first.lastname = rowData[i];
+                break;
+            case 2:
+                entry.first.patronymic = getOptStr(rowData[i]);
+                break;
+            case 3:
+                entry.second.country_code = stoi(rowData[i]);
+                break;
+            case 4:
+                entry.second.city_code = stoi(rowData[i]);
+                break;
+            case 5:
+                entry.second.number = rowData[i];
+                break;
+            case 6:
+                entry.second.additional_number = getOptInt(rowData[i]);
+                break;
             }
         }
-        file.close();
-    };
 
-    void SortByName();
-    
-    void SortByPhone();
-    
-    tuple<string, PhoneNumber> GetPhoneNumber(const string& surname);
-    
-    void ChangePhoneNumber(const Person& person, const PhoneNumber& newPhNum);
-
-    friend ostream& operator<< (ostream& out, PhoneBook book);
-    
-};
-
-ostream& operator<< (ostream& out, PhoneBook book)
-{
-    for (const auto& [person, number] : book.record)
-    {
-        out << person << setw(5) << number << endl;
+        m_data.push_back(entry);
     }
+}
+
+std::ostream& operator<<(std::ostream& out, const PhoneBook& pb)
+{
+    for (const auto& [first, second] : pb.m_data)
+    {
+        out << first << ' ' << second << std::endl;
+    }
+
     return out;
 }
 
 void PhoneBook::SortByName()
 {
-    Less less;
-    sort(record.begin(), record.end(), less);
+    sort(m_data.begin(), m_data.end(), [](const std::pair<Person, PhoneNumber>& lhs, const std::pair<Person, PhoneNumber>& rhs)
+        {
+            return lhs.first < rhs.first;
+        });
 }
 
 void PhoneBook::SortByPhone()
 {
-    Less less;
-    sort(record.begin(), record.end(),less);
-}
-
-tuple <string, PhoneNumber> PhoneBook::GetPhoneNumber(const string& ssurname)
-{
-    int count = 0;
-    for (const auto& [person, number] : record)
-    {
-        if (person.person == ssurname)
+    sort(m_data.begin(), m_data.end(), [](const std::pair<Person, PhoneNumber>& lhs, const std::pair<Person, PhoneNumber>& rhs)
         {
-            count++;
-        }
-    }
-    if (count == 0) {
-        cout << "Not found!" << endl;
-    }
-    else if (count == 1)
-        cout << "" << endl;
-
-    else if (count > 1){
-        cout << "Found more than 1!" << endl;
-   }     
-}
-
-void PhoneBook::ChangePhoneNumber(const Person& person, const PhoneNumber& newPhNum)
-{
-    auto find_rec = std::find_if(record.begin(), record.end(),
-        [&person](const auto& rec)
-        {
-            return rec.first == person;
+            return lhs.second < rhs.second;
         });
-    if (find_rec != record.end()) find_rec->second = newPhNum;
 }
 
-
-
-int main()
+std::pair<std::string, std::vector<PhoneNumber>> PhoneBook::GetPhoneNumber(const std::string& firstname)
 {
-    ifstream file("PhoneBook.txt"); 
-    PhoneBook book(file);
-    cout << book;
-    cout << "------SortByPhone-------" << endl;
-    book.SortByPhone();
-    cout << book;
-    cout << "------SortByName--------" << endl;
-    book.SortByName();
-    cout << book;
-    cout << "-----GetPhoneNumber-----" << endl;
-    auto print_phone_number = [&book](const string& surname) {
-        cout << surname << "\t";
-        auto answer = book.GetPhoneNumber(surname);
-        if (get<0>(answer).empty())
-            cout << get<1>(answer);
-        else
-            cout << get<0>(answer);
-        cout << endl;
-    };
-    
-    print_phone_number("Ivanov");
-    print_phone_number("Petrov");
-    cout << "----ChangePhoneNumber----" << endl;
-    book.ChangePhoneNumber(Person{ "Kotov", "Vasilii", "Eliseevich" },
-        PhoneNumber{ 7, 123, "15344458", nullopt });
-    book.ChangePhoneNumber(Person{ "Mironova", "Margarita", "Vladimirovna" },
-        PhoneNumber{ 16, 465, "915544", 13 });
-    cout << book;
+    std::vector<PhoneNumber> phoneNumbers;
+    int count = 0;
 
-    return 0;
+    for_each(m_data.begin(), m_data.end(), [&](const auto& entry)
+        {
+            if (entry.first.firstname == firstname)
+            {
+                phoneNumbers.push_back(entry.second);
+                ++count;
+            }
+        });
+
+    switch (count)
+    {
+    case 0:
+        return { "not found", phoneNumbers };
+    case 1:
+        return { "", phoneNumbers };
+    default:
+        return { "found more than 1", phoneNumbers };
+    }
 }
 
+void PhoneBook::ChangePhoneNumber(const Person& p, const PhoneNumber& pn)
+{
+    auto entry = find_if(m_data.begin(), m_data.end(), [&](const auto& entry)
+        {
+            return entry.first == p;
+        });
+
+    if (entry != m_data.end())
+    {
+        entry->second = pn;
+    }
+}
+
+int main(int argc, char** argv)
+{
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
